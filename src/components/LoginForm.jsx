@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Button from './Button';
 import Input from './Input';
+import { verifyPassword, handleSession } from '../config/auth';
 
 const FormContainer = styled.div`
   background: var(--background-box);
@@ -35,53 +37,57 @@ const Label = styled.label`
   font-weight: 500;
 `;
 
+const ErrorMessage = styled.div`
+  color: var(--error);
+  font-size: var(--small);
+  margin-top: var(--s-unit);
+`;
+
 const LoginForm = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
+  const navigate = useNavigate();
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Aquí puedes agregar la lógica de autenticación
-    console.log('Datos del formulario:', formData);
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const isValid = await verifyPassword(password);
+      
+      if (isValid) {
+        handleSession.create();
+        navigate('/dashboard', { replace: true });
+      } else {
+        setError('Contraseña incorrecta');
+      }
+    } catch (err) {
+      setError('Ocurrió un error al verificar la contraseña');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <FormContainer>
       <Form onSubmit={handleSubmit}>
         <InputGroup>
-          <Label htmlFor="email">Correo electrónico</Label>
-          <Input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="ejemplo@correo.com"
-            required
-          />
-        </InputGroup>
-        <InputGroup>
           <Label htmlFor="password">Contraseña</Label>
           <Input
             type="password"
             id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
             required
           />
         </InputGroup>
-        <Button type="submit">Iniciar Sesión</Button>
+        {error && <ErrorMessage>{error}</ErrorMessage>}
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? 'Verificando...' : 'Iniciar Sesión'}
+        </Button>
       </Form>
     </FormContainer>
   );

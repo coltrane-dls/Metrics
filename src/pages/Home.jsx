@@ -58,9 +58,9 @@ const Home = () => {
         color: 'var(--text-soft)'
       }}>
         <span>Al continuar, aceptas nuestros </span>
-        <a href="#" style={{ color: 'var(--primary)', textDecoration: 'none' }}>Términos y Condiciones</a>
+        <a href="/terms" style={{ color: 'var(--primary)', textDecoration: 'none' }}>Términos y Condiciones</a>
         <span> y </span>
-        <a href="#" style={{ color: 'var(--primary)', textDecoration: 'none' }}>Aviso de Privacidad</a>
+        <a href="/privacy" style={{ color: 'var(--primary)', textDecoration: 'none' }}>Aviso de Privacidad</a>
       </div>
       <div style={{
         marginTop: 'var(--s-unit-4)',
